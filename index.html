@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body{
+        background-color: #282727;
+    }
+    #nav{
+        width: 100%;
+        height: 90px;
+        border: 1px solid black;
+        display: flex;
+       
+    }
+    #img1{
+        width: 200px;
+        height: 100%;
+    }
+    #query{
+        margin-left:300px;
+        margin-top: 28px;
+        width: 400px;
+        height: 30px;
+        border-radius: 10px;
+        background-color: #121212;
+        color: white;
+    }
+    #button{
+        background-color: #313131;
+        color: grey;
+        width: 100px;
+        height: 35px;
+        border-radius: 10px;
+        
+    }
+    #moviessearch{
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: auto;
+        gap: 33px;
+    }
+     #div2{
+         width: 350px;
+         /* border: 1px solid teal; */
+         cursor: pointer;
+     }
+     #div1{
+         /* border: 1px solid blue; */
+         height: 280px;
+     }
+    
+    #Title{
+        /* border: 1px solid red; */
+        color: white;
+        line-height: 25px;
+        font-family: sans-serif;
+    }
+    #iframe1{
+        width : 100%;
+        height : 100%;
+    }
+</style>
+<body>
+    <div id="nav">
+        
+             <img id="img1" src="https://th.bing.com/th/id/OIP.ApfpYeEi13OGFw04YliEzwHaEo?w=284&h=180&c=7&r=0&o=5&pid=1.7" alt="">
+
+             <div>
+                <input type="text" id="query" placeholder="Search">
+                <button id="button" onclick="searchvideos()">Search</button>
+             </div>
+          
+    </div>
+    <div id="moviessearch"></div>
+</body>
+</html>
+
+<script>
+    //  <iframe width="560" height="315" src="https://www.youtube.com/embed/rJQTGd2ljVU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    const API = "AIzaSyABQJQ2IBxT8czscUfzPxmaDqMRsXis-xg"
+
+    const movies1 = document.getElementById("moviessearch")
+
+const searchvideos = async () => {
+   
+    try{
+        
+        const q = document.getElementById("query").value
+
+        const res = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=30&q=${q}%202&key=${API}`)
+
+        const data = await res.json()
+
+        append(data.items)
+
+        console.log(data.items)
+    }
+    catch(err){
+        console.log(err)
+     }
+}
+
+
+
+
+const append = (videos) => {
+  
+    
+    
+    movies1.innerHTML = null
+
+    videos.forEach(({id: {videoId}, snippet:{title}})=>{
+
+       const div1 = document.createElement("div")
+       div1.id = "div2"
+        
+
+        const div = document.createElement("div")
+        div.id = "div1"
+
+        let Title = document.createElement("h4")
+        Title.innerText = title
+        Title.id = "Title"
+        
+        let iframe = document.createElement("iframe")
+        iframe.id = "iframe1"
+        iframe.allow= "fullscreen"
+        iframe.frameBorder = "none"
+        iframe.src = `https://www.youtube.com/embed/${videoId}`
+  
+
+         let data = {
+            title,
+             videoId,
+             
+         }
+        
+
+        div.append(iframe, Title)
+        div1.append(div,Title)
+
+        div1.onclick = () =>{
+            showvideo(data)
+        }
+
+        movies1.append(div1)
+    })
+   
+
+
+}
+let arr = JSON.parse(localStorage.getItem("video"))
+const showvideo = (x) => {
+   window.location.href = "video.html"
+   localStorage.setItem("video", JSON.stringify(x))
+}
+
+const url = `https://www.googleapis.com/youtube/v3/videos?part=contentDetails&chart=mostPopular&regionCode=IN&maxResults=25&key=AIzaSyCvKtQPCpkQvvk1rR3rikqmlrH4VB7SEC0`
+
+fetch(url)
+.then(function(res){
+    return res.json()
+})
+.then(function(res){
+    appendMovies(res.items)
+    console.log(res.items)
+})
+
+function appendMovies(data){
+    var movies1 = document.getElementById("moviessearch")
+    data.forEach(({id: {id}})=>{
+
+
+        const div = document.createElement("div")
+        div.id = "div1"
+        
+        let iframe = document.createElement("iframe")
+        iframe.id = "iframe1"
+        iframe.allow= "fullscreen"
+        iframe.frameBorder = "none"
+        iframe.src = `https://www.youtube.com/embed/${id}`
+       
+        div.append(iframe)
+        movies1.append(div)
+    })
+}
+
+</script>
